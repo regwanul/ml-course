@@ -23,8 +23,25 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+steps = [0.01 0.03 0.1 0.3 1 3 10 30];
 
+error = 1000000; % really high number
+for i=1:size(steps, 2)
+	for j=1:size(steps, 2)
+		C_best = steps(i);
+		sigma_best = steps(j);
 
+		model = svmTrain(X, y, C_best, @(x1, x2) gaussianKernel(x1, x2, sigma_best));
+		predictions = svmPredict(model, Xval);
+		new_error = mean(double(predictions ~= yval));
+		
+		if new_error < error
+			error = new_error;
+			C = C_best;
+			sigma = sigma_best;
+		end
+	end
+end
 
 
 
